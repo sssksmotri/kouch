@@ -15,5 +15,6 @@
     <color name="back_grey">#555555</color>
     <color name="text1">#E5E2E2</color>
     <color name="green">#2EF44D</color>
+    <color name="off_white">#FAFAFA</color>
 
 </resources>
