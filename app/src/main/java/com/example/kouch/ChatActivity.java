@@ -2,28 +2,34 @@ package com.example.kouch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.kouch.Model.ChatMessageModel;
 import com.example.kouch.Model.ChatRoomModel;
 import com.example.kouch.Model.User;
+import com.example.kouch.adapter.ChatRecyclerAdapter;
 import com.example.kouch.utils.AndroidUtil;
 import com.example.kouch.utils.FirebaseUtil;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
 
 import java.util.Arrays;
 
 public class ChatActivity extends AppCompatActivity {
     User otherUser;
     ChatRoomModel chatRoomModel;
+    ChatRecyclerAdapter adapter;
     String chatroomId;
     EditText messageInput;
     ImageButton backBtn;
@@ -55,13 +61,38 @@ public class ChatActivity extends AppCompatActivity {
 
         otherUserFname.setText(otherUser.getFName());
         getOrCreateChatroomModel();
+        setupChatRecyclerView();
         sendMessageBtn.setOnClickListener(v -> {
             String message = messageInput.getText().toString().trim();
-            if(message.isEmpty()){
+            if (message.isEmpty()) {
                 return;
-
             }
             sendMessageToUser(message);
+        });
+    }
+
+    void setupChatRecyclerView() {
+        Query query = FirebaseUtil.getChatRoomMessageReferens(chatroomId)
+                .orderBy("timestamp", Query.Direction.ASCENDING);
+
+        FirestoreRecyclerOptions<ChatMessageModel> options = new FirestoreRecyclerOptions.Builder<ChatMessageModel>()
+                .setQuery(query, ChatMessageModel.class).build();
+
+        adapter = new ChatRecyclerAdapter(options, getApplicationContext());
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+        adapter.startListening();
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int lastVisiblePosition = manager.findLastCompletelyVisibleItemPosition();
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (adapter.getItemCount() - 1) && lastVisiblePosition == (positionStart - 1))) {
+                    recyclerView.scrollToPosition(positionStart);
+                }
+            }
         });
     }
 
@@ -81,21 +112,25 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-    void sendMessageToUser( String message){
+
+    void sendMessageToUser(String message) {
         chatRoomModel.setLastMessage(Timestamp.now());
         chatRoomModel.setLastMessageSenderId(FirebaseUtil.currentUserId());
+        chatRoomModel.setLastMessage_user(message);
         FirebaseUtil.getChatroomReference(chatroomId).set(chatRoomModel);
-        ChatMessageModel chatMessageModel = new ChatMessageModel(message,FirebaseUtil.currentUserId(),Timestamp.now());
+        ChatMessageModel chatMessageModel = new ChatMessageModel(message, FirebaseUtil.currentUserId(), Timestamp.now());
         FirebaseUtil.getChatRoomMessageReferens(chatroomId).add(chatMessageModel)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
-                     if(task.isSuccessful()){
-                         messageInput.setText("");
-                     }
+                        if (task.isSuccessful()) {
+                            messageInput.setText("");
+                            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                        }
                     }
                 });
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Replaces the default 'Back' button action
@@ -110,5 +145,21 @@ public class ChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Perform any additional tasks here if needed before finishing the activity
         super.onBackPressed();  // This will finish the activity and go back to the previous activity
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
     }
 }

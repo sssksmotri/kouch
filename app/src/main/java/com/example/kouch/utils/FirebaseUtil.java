@@ -1,9 +1,15 @@
 package com.example.kouch.utils;
 
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.TimeZone;
+
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
 
 
 public class FirebaseUtil {
@@ -30,5 +36,22 @@ public class FirebaseUtil {
     public static CollectionReference getChatRoomMessageReferens(String chatroomId){
         return getChatroomReference(chatroomId).collection("chats");
 
+    }
+    public static CollectionReference allChatRoomCollectionReference(){
+        return FirebaseFirestore.getInstance().collection("chatrooms");
+    }
+    public static DocumentReference getOtherUserFromChatroom(List<String> userIds){
+        if(userIds.get(0).equals(FirebaseUtil.currentUserId())){
+           return allCollectionReferens().document(userIds.get(1));
+        }else {
+           return allCollectionReferens().document(userIds.get(0));
+        }
+
+    }
+    public static String timestampToString(Timestamp timestamp){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        // Устанавливаем часовой пояс Москвы
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        return sdf.format(timestamp.toDate());
     }
 }

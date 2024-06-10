@@ -54,7 +54,7 @@
             android:id="@+id/message_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edittextchat"
+            android:background="#3D2D3A"
             android:hint="Тыкай сюда (●'◡'●)"
             android:padding="8dp"
             android:textColor="@color/lightgray"

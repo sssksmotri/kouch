@@ -1,15 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment">
+    tools:context=".ProfileFragment"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_margin="20dp">
 
+    <ImageView
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/profile4"
+        android:backgroundTint="@color/black"
+        android:scaleType="centerCrop"
+        android:layout_centerVertical="true"
+        android:id="@+id/profile_image_view"
+        android:layout_marginBottom="40dp"/>
+    <EditText
+        android:id="@+id/profile_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:hint="Username"
+        android:layout_margin="10dp"
+        android:elevation="5dp"
+        android:background="@drawable/edittext_style"
+        android:textColor="@color/white"/>
+    <EditText
+        android:id="@+id/profile_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:hint="Email"
+        android:layout_margin="10dp"
+        android:elevation="5dp"
+        android:background="@drawable/edittext_style"
+        android:textColor="@color/white"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/profile_update_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_back2"
+            android:text="Update profile"
+            android:textColor="@color/white"/>
+        <ProgressBar
+            android:id="@+id/profile_progress_bar"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/design_default_color_primary"
+            android:layout_gravity="center"/>
+    </LinearLayout>
     <TextView
+        android:id="@+id/Logout_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Profile Screen"
-        android:textSize="22sp"
-        android:layout_centerInParent="true" />
-
-</RelativeLayout>
+        android:text="Logout"/>
+</LinearLayout>

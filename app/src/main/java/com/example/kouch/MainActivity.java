@@ -58,14 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         userID = sharedPreferences.getString("userID", null);
-        Button btnLogout = findViewById(R.id.vihod);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
-
     }
 
     public void logout() {
@@ -75,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
         editor.remove("userID");
         editor.apply();
 
-        // Возвращение к экрану авторизации
+
         Intent intent = new Intent(MainActivity.this, Login.class);
         startActivity(intent);
-        finish(); // Закрытие текущей активности
+        finish();
     }
 }

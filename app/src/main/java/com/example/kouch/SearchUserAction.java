@@ -43,7 +43,7 @@ public class SearchUserAction extends AppCompatActivity {
         });
     }
     void setupSearchRecyclerView(String searchTerm) {
-        Log.d("SearchUserAction", "Setting up recycler view with searchTerm: " + searchTerm);
+
         Query query = FirebaseUtil.allCollectionReferens()
                 .whereGreaterThanOrEqualTo("FName", searchTerm)
                 .whereLessThanOrEqualTo("FName", searchTerm + '\uf8ff'); // Добавляем верхний предел
@@ -51,13 +51,13 @@ public class SearchUserAction extends AppCompatActivity {
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class).build();
 
-        Log.d("SearchUserAction", "Query created, options set.");
+
 
         adapter = new SearchUserRecyclerAdapter(options, getApplicationContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         adapter.startListening();
-        Log.d("SearchUserAction", "Adapter set and listening started.");
+
     }
     @Override
     protected void onStart(){
@@ -78,7 +78,7 @@ public class SearchUserAction extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if(adapter!=null){
-            adapter.startListening();
+            adapter.notifyDataSetChanged();
         }
     }
 }

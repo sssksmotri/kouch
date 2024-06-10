@@ -7,6 +7,7 @@ public class ChatMessageModel {
     private String senderId;
     private Timestamp timestamp;
 
+
     public ChatMessageModel() {
     }
 

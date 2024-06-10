@@ -82,7 +82,7 @@ public class Register extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        User user = new User(userId, "", "", email, "", password, "",FieldValue.serverTimestamp());
+        User user = new User(userId, "", "Couch", email, "", password, "",FieldValue.serverTimestamp());
 
         // Записываем пользователя в Firestore
         db.collection("users").document(userId)

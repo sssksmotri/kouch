@@ -141,7 +141,7 @@ public class Login extends AppCompatActivity {
                                     .addOnFailureListener(e -> Log.e("LoginActivity", "Error updating user data in Firestore", e));
                         }
                     } else {
-                        User user = new User(userId, "", "", email, "", password, "", FieldValue.serverTimestamp());
+                        User user = new User(userId, "", "Couch", email, "", password, "", FieldValue.serverTimestamp());
                         db.collection("users").document(userId)
                                 .set(user)
                                 .addOnSuccessListener(aVoid -> Log.d("LoginActivity", "User data created in Firestore"))
