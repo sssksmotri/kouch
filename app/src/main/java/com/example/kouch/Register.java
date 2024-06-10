@@ -12,10 +12,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.kouch.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Register extends AppCompatActivity {
 
@@ -33,7 +36,6 @@ public class Register extends AppCompatActivity {
         edEmail = findViewById(R.id.edEmail);
         edPassword = findViewById(R.id.edPassword);
         avtoriz_txt = findViewById(R.id.avtoriz_txt);
-
         btn_register = findViewById(R.id.btn_register);
 
         avtoriz_txt.setOnClickListener(new View.OnClickListener() {
@@ -43,13 +45,14 @@ public class Register extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (edEmail.getText().toString().isEmpty() || edPassword.getText().toString().isEmpty()){
                     Toast.makeText(Register.this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
                     Log.d("RegisterActivity", "Fields are empty");
-                }else{
+                } else {
                     Log.d("RegisterActivity", "Attempting to register");
                     mAuth.createUserWithEmailAndPassword(edEmail.getText().toString(), edPassword.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -57,9 +60,11 @@ public class Register extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()){
                                         Log.d("RegisterActivity", "Registration successful");
+                                        // Сохраняем данные пользователя в Firestore
+                                        saveUserToFirestore();
                                         Intent intent = new Intent(Register.this, MainActivity.class);
                                         startActivity(intent);
-                                    }else{
+                                    } else {
                                         Log.e("RegisterActivity", "Registration failed", task.getException());
                                         Toast.makeText(Register.this, "You have errors", Toast.LENGTH_SHORT).show();
                                     }
@@ -70,7 +75,19 @@ public class Register extends AppCompatActivity {
         });
     }
 
-    public void onClickRegister(View view){
+    private void saveUserToFirestore() {
+        String userId = mAuth.getCurrentUser().getUid();
+        String email = edEmail.getText().toString();
+        String password =edPassword.getText().toString();
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        User user = new User(userId, "", "", email, "", password, "",FieldValue.serverTimestamp());
+
+        // Записываем пользователя в Firestore
+        db.collection("users").document(userId)
+                .set(user)
+                .addOnSuccessListener(aVoid -> Log.d("RegisterActivity", "User data created in Firestore"))
+                .addOnFailureListener(e -> Log.e("RegisterActivity", "Error creating user data in Firestore", e));
     }
 }

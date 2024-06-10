@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.kouch.Model.User;
 import com.example.kouch.utils.FirebaseUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -112,7 +114,7 @@ public class Login extends AppCompatActivity {
     private void updateUserInFirestore() {
         String userId = mAuth.getCurrentUser().getUid();
         String email = edEmail.getText().toString();
-
+        String password = edPassword.getText().toString();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Fetch the user details from Firestore
@@ -130,6 +132,8 @@ public class Login extends AppCompatActivity {
                             userUpdates.put("email", email);
                             userUpdates.put("FName", user.getFName());
                             userUpdates.put("LName", user.getLName());
+                            userUpdates.put("createdAt", user.getCreatedTimeStamp() != null ? user.getCreatedTimeStamp() : FieldValue.serverTimestamp());
+                            userUpdates.put("updatedAt", FieldValue.serverTimestamp());
                             userUpdates.put("photoUrl", user.getPhotoUrl());
 
                             docRef.update(userUpdates)
@@ -137,8 +141,7 @@ public class Login extends AppCompatActivity {
                                     .addOnFailureListener(e -> Log.e("LoginActivity", "Error updating user data in Firestore", e));
                         }
                     } else {
-                        // If user details do not exist, create a new entry
-                        User user = new User(userId, "", "", "", "", "", email, "", "", "");
+                        User user = new User(userId, "", "", email, "", password, "", FieldValue.serverTimestamp());
                         db.collection("users").document(userId)
                                 .set(user)
                                 .addOnSuccessListener(aVoid -> Log.d("LoginActivity", "User data created in Firestore"))
@@ -151,12 +154,12 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    void getUsername(){
+    void getUsername() {
         FirebaseUtil.currentUserDetails().get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 User user = task.getResult().toObject(User.class);
-                if(user!=null){
+                if (user != null) {
                     edEmail.setText(user.getEmail());
                 }
             }

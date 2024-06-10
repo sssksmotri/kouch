@@ -1,100 +1,108 @@
-package com.example.kouch;
+package com.example.kouch.Model;
+
+import com.google.firebase.firestore.PropertyName;
 
 public class User {
     private String id;
-    private String SName, FName, LName, Gender, birthday, email, phone, password;
+    private String FName;
+    private String LName;
+    private String email;
+    private String phone;
+    private String password;
     private String photoUrl;
+    private Object createdTimeStamp;
 
     public User() {
     }
 
-    public User(String id, String SName, String FName, String LName, String Gender, String birthday, String email, String phone, String password, String photoUrl) {
+    public User(String id, String FName, String LName, String email, String phone, String password, String photoUrl, Object createdTimeStamp) {
         this.id = id;
-        this.SName = SName;
         this.FName = FName;
         this.LName = LName;
-        this.Gender = Gender;
-        this.birthday = birthday;
         this.email = email;
         this.phone = phone;
         this.password = password;
         this.photoUrl = photoUrl;
+        this.createdTimeStamp = createdTimeStamp;
     }
 
-    // Геттеры и сеттеры
+    @PropertyName("id")
     public String getId() {
         return id;
     }
 
-    public String getSName() {
-        return SName;
+    @PropertyName("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setSName(String SName) {
-        this.SName = SName;
-    }
-
+    @PropertyName("FName")
     public String getFName() {
         return FName;
     }
 
+    @PropertyName("FName")
     public void setFName(String FName) {
         this.FName = FName;
     }
 
+    @PropertyName("LName")
     public String getLName() {
         return LName;
     }
 
+    @PropertyName("LName")
     public void setLName(String LName) {
         this.LName = LName;
     }
 
-    public String getGender() {
-        return Gender;
-    }
-
-    public void setGender(String Gender) {
-        this.Gender = Gender;
-    }
-
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
+    @PropertyName("email")
     public String getEmail() {
         return email;
     }
 
+    @PropertyName("email")
     public void setEmail(String email) {
         this.email = email;
     }
 
+    @PropertyName("phone")
     public String getPhone() {
         return phone;
     }
 
+    @PropertyName("phone")
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    @PropertyName("password")
     public String getPassword() {
         return password;
     }
 
+    @PropertyName("password")
     public void setPassword(String password) {
         this.password = password;
     }
 
+    @PropertyName("photoUrl")
     public String getPhotoUrl() {
         return photoUrl;
     }
 
+    @PropertyName("photoUrl")
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    @PropertyName("createdTimeStamp")
+    public Object getCreatedTimeStamp() {
+        return createdTimeStamp;
+    }
+
+    @PropertyName("createdTimeStamp")
+    public void setCreatedTimeStamp(Object createdTimeStamp) {
+        this.createdTimeStamp = createdTimeStamp;
     }
 }
