@@ -1,8 +1,13 @@
 package com.example.kouch.utils;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.kouch.Model.User;
 
 
@@ -21,5 +26,9 @@ public class AndroidUtil {
     user.setEmail(intent.getStringExtra("Email"));
     user.setId(intent.getStringExtra("id"));
     return user;
+    }
+    public static void setProfilePic(Context context, Uri imageUri, ImageView imageView){
+        Glide.with(context).load(imageUri).apply(RequestOptions.circleCropTransform()).into(imageView);
+
     }
 }

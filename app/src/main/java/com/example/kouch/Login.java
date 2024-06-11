@@ -97,8 +97,8 @@ public class Login extends AppCompatActivity {
                                         // Обновляем данные пользователя в Firestore
                                         updateUserInFirestore();
 
-                                        Log.d("LoginScreen", "User logged in successfully, redirecting to MainActivity");
-                                        Intent intent = new Intent(Login.this, MainActivity.class);
+                                        Log.d("LoginScreen", "User logged in successfully, redirecting to Splash_activity");
+                                        Intent intent = new Intent(Login.this, Splash_activity.class);
                                         startActivity(intent);
                                         finish(); // Закрываем текущую активность
                                     } else {

@@ -2,6 +2,7 @@ package com.example.kouch.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,15 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
         if(model.getId().equals(FirebaseUtil.currentUserId())){
             holder.fio.setText(model.getFName()+" (Me)");
         }
+
+        FirebaseUtil.GetOtherProfilePicStorageRef(model.getId()).getDownloadUrl()
+                .addOnCompleteListener(t -> {
+                    if(t.isSuccessful()){
+                        Uri uri = t.getResult();
+                        AndroidUtil.setProfilePic(context,uri,holder.profile_pic);
+                    }
+                });
+
         holder.itemView.setOnClickListener(v -> {
         Intent intent = new Intent(context, ChatActivity.class);
             AndroidUtil.passUserAsIntent(intent,model);

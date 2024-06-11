@@ -21,8 +21,8 @@
             android:layout_toRightOf="@id/profile_pic_layoute"/>
         <include layout="@layout/profile_pic_view"
             android:id="@+id/profile_pic_layoute"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginStart="10dp"
             android:layout_toRightOf="@id/back_btn"/>
         <ImageButton
@@ -48,22 +48,22 @@
         android:layout_alignParentBottom="true"
         android:padding="8dp"
         android:background="#3D2D3A">
-        
+
 
         <EditText
             android:id="@+id/message_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/message_send_btn"
             android:background="#3D2D3A"
-            android:hint="Тыкай сюда (●'◡'●)"
+            android:hint="Сообщение"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxHeight="150dp"
+            android:minHeight="48dp"
             android:padding="8dp"
             android:textColor="@color/lightgray"
-            android:textColorHint="@color/lightgray"
-            android:inputType="textCapSentences|textMultiLine"
-            android:layout_centerInParent="true"
-            android:minHeight="48dp"
-            android:maxHeight="150dp"
-            android:layout_toLeftOf="@id/message_send_btn"/>
+            android:textColorHint="@color/lightgray" />
 
         <ImageButton
             android:id="@+id/message_send_btn"
@@ -76,10 +76,6 @@
             android:padding="8dp"
             android:layout_margin="10dp"/>
 
-
-
-
-        
     </RelativeLayout>
 
 </RelativeLayout>

@@ -50,7 +50,7 @@ public class Register extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edUsername.getText().toString().isEmpty() || edEmail.getText().toString().isEmpty() || edPassword.getText().toString().isEmpty()){
+                if (edUsername.getText().toString().isEmpty() || edEmail.getText().toString().isEmpty() || edPassword.getText().toString().isEmpty()) {
                     Toast.makeText(Register.this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
                     Log.d("RegisterActivity", "Fields are empty");
                 } else {
@@ -59,11 +59,11 @@ public class Register extends AppCompatActivity {
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()){
+                                    if (task.isSuccessful()) {
                                         Log.d("RegisterActivity", "Registration successful");
                                         // Сохраняем данные пользователя в Firestore
                                         saveUserToFirestore();
-                                        Intent intent = new Intent(Register.this, MainActivity.class);
+                                        Intent intent = new Intent(Register.this, Splash_activity.class);
                                         startActivity(intent);
                                     } else {
                                         Log.e("RegisterActivity", "Registration failed", task.getException());

@@ -36,12 +36,13 @@ dependencies {
     implementation("com.yandex.android:maps.mobile:4.6.1-lite")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.google.android.material:material:1.4.0")
-    implementation ("com.google.firebase:firebase-firestore:24.4.0")
+
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.0")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     implementation("com.makeramen:roundedimageview:2.3.0")
     implementation("com.google.firebase:firebase-firestore:25.0.0")
+    implementation("com.google.firebase:firebase-messaging:24.0.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
@@ -49,7 +50,9 @@ dependencies {
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.google.firebase:firebase-storage:21.0.0")
     implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation ("com.github.dhaval2404:imagepicker:2.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+
 
 }

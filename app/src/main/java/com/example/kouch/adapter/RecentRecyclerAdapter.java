@@ -3,6 +3,7 @@ package com.example.kouch.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,26 +39,35 @@ public class RecentRecyclerAdapter extends FirestoreRecyclerAdapter<ChatRoomMode
 
         FirebaseUtil.getOtherUserFromChatroom(model.getUserIds())
                 .get().addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        boolean LastMessageSendByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
+                    if (task.isSuccessful()) {
+                        boolean lastMessageSendByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
 
                         User otheruser = task.getResult().toObject(User.class);
+                        FirebaseUtil.GetOtherProfilePicStorageRef(otheruser.getId()).getDownloadUrl()
+                                .addOnCompleteListener(t -> {
+                                    if (t.isSuccessful()) {
+                                        Uri uri = t.getResult();
+                                        AndroidUtil.setProfilePic(context, uri, holder.profile_pic);
+                                    }
+                                });
                         holder.fio.setText(otheruser.getFName());
-                        if(LastMessageSendByMe)
-                            holder.lastMessegeText.setText(model.getLastMessage_user());
-                        else
-                        holder.lastMessegeText.setText(model.getLastMessage_user());
+
+                        String lastMessage = model.getLastMessage_user();
+                        if (lastMessage.length() > 50) {
+                            lastMessage = lastMessage.substring(0, 50) + "...";
+                        }
+                        holder.lastMessegeText.setText(lastMessage);
+
                         holder.lastMessegeTime.setText(FirebaseUtil.timestampToString(model.getLastMessage()));
 
                         holder.itemView.setOnClickListener(v -> {
                             Intent intent = new Intent(context, ChatActivity.class);
-                            AndroidUtil.passUserAsIntent(intent,otheruser);
+                            AndroidUtil.passUserAsIntent(intent, otheruser);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
                         });
                     }
                 });
-
     }
 
     @NonNull

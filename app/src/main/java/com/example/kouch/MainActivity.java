@@ -6,15 +6,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.example.kouch.utils.FirebaseUtil;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         profileFragment = new ProfileFragment();
         bottomNavigationView = findViewById(R.id.navigation_bar);
         serchbutton = findViewById(R.id.search_user);
+        getFCMToketn();
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -55,9 +61,18 @@ public class MainActivity extends AppCompatActivity {
         });
         bottomNavigationView.setSelectedItemId(R.id.menu_chats);
 
-
+        getFCMToketn();
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         userID = sharedPreferences.getString("userID", null);
+
+    }
+    void getFCMToketn(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+              if(task.isSuccessful()){
+                  String token = task.getResult();
+                  FirebaseUtil.currentUserDetails().update("fcmToken",token);
+              }
+        });
     }
 
 

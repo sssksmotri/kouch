@@ -11,6 +11,7 @@ public class User {
     private String password;
     private String photoUrl;
     private Object createdTimeStamp;
+    private String fcmToken;
 
     public User() {
     }
@@ -104,5 +105,13 @@ public class User {
     @PropertyName("createdTimeStamp")
     public void setCreatedTimeStamp(Object createdTimeStamp) {
         this.createdTimeStamp = createdTimeStamp;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
