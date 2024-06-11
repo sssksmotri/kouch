@@ -117,7 +117,6 @@ public class Login extends AppCompatActivity {
         String password = edPassword.getText().toString();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Fetch the user details from Firestore
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -131,7 +130,7 @@ public class Login extends AppCompatActivity {
                             Map<String, Object> userUpdates = new HashMap<>();
                             userUpdates.put("email", email);
                             userUpdates.put("FName", user.getFName());
-                            userUpdates.put("LName", user.getLName());
+                            userUpdates.put("LName", user.getRole());
                             userUpdates.put("createdAt", user.getCreatedTimeStamp() != null ? user.getCreatedTimeStamp() : FieldValue.serverTimestamp());
                             userUpdates.put("updatedAt", FieldValue.serverTimestamp());
                             userUpdates.put("photoUrl", user.getPhotoUrl());

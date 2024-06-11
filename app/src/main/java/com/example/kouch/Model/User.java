@@ -5,7 +5,7 @@ import com.google.firebase.firestore.PropertyName;
 public class User {
     private String id;
     private String FName;
-    private String LName;
+    private String Role;
     private String email;
     private String phone;
     private String password;
@@ -15,10 +15,10 @@ public class User {
     public User() {
     }
 
-    public User(String id, String FName, String LName, String email, String phone, String password, String photoUrl, Object createdTimeStamp) {
+    public User(String id, String FName, String Role, String email, String phone, String password, String photoUrl, Object createdTimeStamp) {
         this.id = id;
         this.FName = FName;
-        this.LName = LName;
+        this.Role = Role;
         this.email = email;
         this.phone = phone;
         this.password = password;
@@ -46,14 +46,14 @@ public class User {
         this.FName = FName;
     }
 
-    @PropertyName("LName")
-    public String getLName() {
-        return LName;
+    @PropertyName("Role")
+    public String getRole() {
+        return Role;
     }
 
-    @PropertyName("LName")
-    public void setLName(String LName) {
-        this.LName = LName;
+    @PropertyName("Role")
+    public void setRole(String Role) {
+        this.Role = Role;
     }
 
     @PropertyName("email")

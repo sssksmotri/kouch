@@ -22,7 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Register extends AppCompatActivity {
 
-    private EditText edEmail, edPassword;
+    private EditText edUsername, edEmail, edPassword;
     private Button btn_register;
     private FirebaseAuth mAuth;
     private TextView avtoriz_txt;
@@ -33,6 +33,7 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        edUsername = findViewById(R.id.edUsername);
         edEmail = findViewById(R.id.edEmail);
         edPassword = findViewById(R.id.edPassword);
         avtoriz_txt = findViewById(R.id.avtoriz_txt);
@@ -49,7 +50,7 @@ public class Register extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edEmail.getText().toString().isEmpty() || edPassword.getText().toString().isEmpty()){
+                if (edUsername.getText().toString().isEmpty() || edEmail.getText().toString().isEmpty() || edPassword.getText().toString().isEmpty()){
                     Toast.makeText(Register.this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
                     Log.d("RegisterActivity", "Fields are empty");
                 } else {
@@ -77,12 +78,13 @@ public class Register extends AppCompatActivity {
 
     private void saveUserToFirestore() {
         String userId = mAuth.getCurrentUser().getUid();
+        String username = edUsername.getText().toString();
         String email = edEmail.getText().toString();
-        String password =edPassword.getText().toString();
+        String password = edPassword.getText().toString();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        User user = new User(userId, "", "Couch", email, "", password, "",FieldValue.serverTimestamp());
+        User user = new User(userId, username, "Couch", email, "", password, "", FieldValue.serverTimestamp());
 
         // Записываем пользователя в Firestore
         db.collection("users").document(userId)

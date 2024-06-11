@@ -1,5 +1,6 @@
 package com.example.kouch.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -20,9 +21,7 @@ import com.example.kouch.utils.AndroidUtil;
 import com.example.kouch.utils.FirebaseUtil;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+
 
 
 public class RecentRecyclerAdapter extends FirestoreRecyclerAdapter<ChatRoomModel,RecentRecyclerAdapter.ChatRoomModelViewHolder> {
@@ -33,6 +32,7 @@ public class RecentRecyclerAdapter extends FirestoreRecyclerAdapter<ChatRoomMode
         this.context=context;
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @Override
     protected void onBindViewHolder(@NonNull ChatRoomModelViewHolder holder, int position, @NonNull ChatRoomModel model) {
 

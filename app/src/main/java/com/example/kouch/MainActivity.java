@@ -60,16 +60,5 @@ public class MainActivity extends AppCompatActivity {
         userID = sharedPreferences.getString("userID", null);
     }
 
-    public void logout() {
-        // Очистка данных пользователя в SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("userID");
-        editor.apply();
 
-
-        Intent intent = new Intent(MainActivity.this, Login.class);
-        startActivity(intent);
-        finish();
-    }
 }

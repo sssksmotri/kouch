@@ -34,7 +34,7 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
         holder.usernameText.setText(model.getEmail());
         holder.fio.setText(model.getFName());
         if(model.getId().equals(FirebaseUtil.currentUserId())){
-            holder.usernameText.setText(model.getEmail()+"(Me)");
+            holder.fio.setText(model.getFName()+" (Me)");
         }
         holder.itemView.setOnClickListener(v -> {
         Intent intent = new Intent(context, ChatActivity.class);

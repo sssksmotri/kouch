@@ -50,8 +50,10 @@ public class FirebaseUtil {
     }
     public static String timestampToString(Timestamp timestamp){
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        // Устанавливаем часовой пояс Москвы
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
         return sdf.format(timestamp.toDate());
+    }
+    public static void Logout(){
+        FirebaseAuth.getInstance().signOut();
     }
 }
