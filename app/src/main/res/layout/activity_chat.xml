@@ -19,6 +19,8 @@
             android:textStyle="bold"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/profile_pic_layoute"/>
+
+
         <include layout="@layout/profile_pic_view"
             android:id="@+id/profile_pic_layoute"
             android:layout_width="56dp"
