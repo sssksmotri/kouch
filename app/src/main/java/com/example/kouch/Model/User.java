@@ -12,11 +12,12 @@ public class User {
     private String photoUrl;
     private Object createdTimeStamp;
     private String fcmToken;
+    private String status;
 
     public User() {
     }
 
-    public User(String id, String FName, String Role, String email, String phone, String password, String photoUrl, Object createdTimeStamp) {
+    public User(String id, String FName, String Role, String email, String phone, String password, String photoUrl, Object createdTimeStamp,String status) {
         this.id = id;
         this.FName = FName;
         this.Role = Role;
@@ -25,6 +26,7 @@ public class User {
         this.password = password;
         this.photoUrl = photoUrl;
         this.createdTimeStamp = createdTimeStamp;
+        this.status=status;
     }
 
     @PropertyName("id")
@@ -113,5 +115,13 @@ public class User {
 
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -37,7 +37,11 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
         if(model.getId().equals(FirebaseUtil.currentUserId())){
             holder.fio.setText(model.getFName()+" (Me)");
         }
-
+        if ("online".equals(model.getStatus())) {
+            holder.statusIndicator.setVisibility(View.VISIBLE);
+        } else {
+            holder.statusIndicator.setVisibility(View.INVISIBLE);
+        }
         FirebaseUtil.GetOtherProfilePicStorageRef(model.getId()).getDownloadUrl()
                 .addOnCompleteListener(t -> {
                     if(t.isSuccessful()){
@@ -66,11 +70,13 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
         TextView usernameText;
         TextView fio;
         ImageView profile_pic;
+        ImageView statusIndicator;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameText=itemView.findViewById(R.id.user_name_text);
             fio=itemView.findViewById(R.id.user_name);
             profile_pic=itemView.findViewById(R.id.profile_pic_image_view);
+            statusIndicator = itemView.findViewById(R.id.status_indicator);
         }
     }
 }

@@ -3,10 +3,12 @@ package com.example.kouch.utils;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,7 +39,6 @@ public class FirebaseUtil {
     }
     public static CollectionReference getChatRoomMessageReferens(String chatroomId){
         return getChatroomReference(chatroomId).collection("chats");
-
     }
     public static CollectionReference allChatRoomCollectionReference(){
         return FirebaseFirestore.getInstance().collection("chatrooms");
@@ -66,4 +67,11 @@ public class FirebaseUtil {
         return FirebaseStorage.getInstance().getReference().child("profile_pic")
                 .child(otherUserId);
     }
+    public static Task<DocumentSnapshot> getUserDetails(String userId) {
+        return FirebaseFirestore.getInstance().collection("users")
+                .document(userId)
+                .get();
+    }
+
+
 }

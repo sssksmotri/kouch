@@ -1,16 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-<ImageView
-    android:layout_width="70dp"
-    android:layout_height="70dp"
-    android:src="@drawable/profile"
-    android:padding="4dp"
-    android:backgroundTint="@color/off_white"
 
-    android:layout_centerVertical="true"
-    android:id="@+id/profile_pic_image_view"/>
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/profile"
+        android:padding="4dp"
+        android:backgroundTint="@color/off_white"
+        android:layout_centerVertical="true"
+        android:id="@+id/profile_pic_image_view"/>
 
+    <ImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:src="@drawable/status_user"
+        android:layout_alignBottom="@id/profile_pic_image_view"
+        android:layout_alignEnd="@id/profile_pic_image_view"
+        android:layout_margin="5dp"
+        android:id="@+id/status_indicator"
+        android:visibility="invisible"/> <!-- Initially invisible -->
 </RelativeLayout>

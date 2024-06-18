@@ -9,7 +9,8 @@ public class ChatMessageModel {
     private String message;
     private String senderId;
     private Timestamp timestamp;
-
+    private String replyToMessageId; // Add this
+    private String replyToMessageText;
 
     public ChatMessageModel() {
     }
@@ -19,6 +20,14 @@ public class ChatMessageModel {
         this.message = message;
         this.senderId = senderId;
         this.timestamp = timestamp;
+    }
+    public ChatMessageModel(String id, String message, String senderId, Timestamp timestamp, String replyToMessageId, String replyToMessageText) {
+        this.id = id;
+        this.message = message;
+        this.senderId = senderId;
+        this.timestamp = timestamp;
+        this.replyToMessageId = replyToMessageId;
+        this.replyToMessageText = replyToMessageText;
     }
 
     public String getId() {
@@ -51,5 +60,21 @@ public class ChatMessageModel {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getReplyToMessageId() {
+        return replyToMessageId;
+    }
+
+    public void setReplyToMessageId(String replyToMessageId) {
+        this.replyToMessageId = replyToMessageId;
+    }
+
+    public String getReplyToMessageText() {
+        return replyToMessageText;
+    }
+
+    public void setReplyToMessageText(String replyToMessageText) {
+        this.replyToMessageText = replyToMessageText;
     }
 }

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.kouch.Model.User;
@@ -51,4 +53,21 @@ public class Splash_activity extends AppCompatActivity {
         }, 20);
     }
 }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        updateStatus("offline");
+    }
+
+    private void updateStatus(String status) {
+        FirebaseUtil.currentUserDetails().update("status", status)
+                .addOnSuccessListener(aVoid -> Log.d("StatusUpdate", "User status updated to " + status))
+                .addOnFailureListener(e -> Log.w("StatusUpdate", "Error updating user status", e));
+    }
 }

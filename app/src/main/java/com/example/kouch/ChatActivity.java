@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import org.json.JSONObject;
@@ -56,10 +59,23 @@ public class ChatActivity extends AppCompatActivity {
     String chatroomId;
     EditText messageInput;
     ImageButton backBtn;
+    ImageButton unpinButton;
+    ImageButton cancelReplyButton;
     ImageButton sendMessageBtn;
     TextView otherUserFname;
     RecyclerView recyclerView;
     ImageView imageView;
+    private TextView otherUserStatus;
+    private ChatMessageModel messageToReplyTo;
+    private TextView replyContextText;
+    private LinearLayout replyContextContainer;
+    private ChatMessageModel pinnedMessage;
+    private TextView pinnedMessageText;
+    private TextView pinnedMessageSender;
+    private LinearLayout pinnedMessageContainer;
+    private boolean isTyping = false;
+    private long lastTypingTime = 0;
+    private static final long TYPING_TIMEOUT = 2000;
 
 
     @Override
@@ -82,6 +98,12 @@ public class ChatActivity extends AppCompatActivity {
         otherUserFname = findViewById(R.id.other_User_Fname);
         recyclerView = findViewById(R.id.chat_recycler_view);
         imageView=findViewById(R.id.profile_pic_image_view);
+        replyContextText = findViewById(R.id.reply_context_text);
+        replyContextContainer = findViewById(R.id.reply_context_container);
+        pinnedMessageText = findViewById(R.id.pinned_message_text);
+        pinnedMessageSender = findViewById(R.id.pinned_message_sender);
+        pinnedMessageContainer = findViewById(R.id.pinned_message_container);
+        otherUserStatus = findViewById(R.id.other_User_Status);
 
         FirebaseUtil.GetOtherProfilePicStorageRef(otherUser.getId()).getDownloadUrl()
                 .addOnCompleteListener(t -> {
@@ -91,8 +113,40 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
+        updateUserStatus();
+
+        unpinButton = findViewById(R.id.unpin_button);
+        unpinButton.setOnClickListener(v -> {
+            pinnedMessageContainer.setVisibility(View.GONE);
+            FirebaseFirestore.getInstance()
+                    .collection("chats")
+                    .document(chatroomId)
+                    .update("pinnedMessageId", null, "pinnedMessageText", null, "pinnedMessageSender", null);
+        });
+
+// Add the cancel reply button click listener
+        cancelReplyButton = findViewById(R.id.cancel_reply_button);
+        cancelReplyButton.setOnClickListener(v -> {
+            clearReplyContext();
+        });
 
 
+        // Add a listener to update the status whenever it changes in the database
+        FirebaseFirestore.getInstance().collection("users").document(otherUser.getId())
+                .addSnapshotListener((documentSnapshot, e) -> {
+                    if (e != null) {
+                        Log.w("ChatActivity", "Listen failed.", e);
+                        return;
+                    }
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            otherUser = user;
+                            updateUserStatus();
+                        }
+                    }
+                });
+        loadPinnedMessage();
         backBtn.setOnClickListener(v -> onBackPressed());
 
         otherUserFname.setText(otherUser.getFName());
@@ -104,7 +158,39 @@ public class ChatActivity extends AppCompatActivity {
                 return;
             }
             sendMessageToUser(message);
+            // Reset typing status after sending message
+            updateStatus("online");
         });
+
+        // Listen for typing events
+        messageInput.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                lastTypingTime = System.currentTimeMillis();
+                if (!isTyping) {
+                    isTyping = true;
+                    updateStatus("typing...");
+                }
+            }
+            return false;
+        });
+
+        // Check if user stopped typing
+        new Thread(() -> {
+            while (true) {
+                long currentTime = System.currentTimeMillis();
+                if (isTyping && (currentTime - lastTypingTime > TYPING_TIMEOUT)) {
+                    runOnUiThread(() -> {
+                        isTyping = false;
+                        updateStatus("online");
+                    });
+                }
+                try {
+                    Thread.sleep(500); // Check every 0.5 second
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     void setupChatRecyclerView() {
@@ -134,9 +220,22 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+    private void updateUserStatus() {
+        // Assuming the User model has a method to get the status
+        String status = otherUser.getStatus(); // This could be a method like getStatus()
+        otherUserStatus.setText(status);
+    }
     private void showContextMenu(ChatMessageModel message, View view) {
         PopupMenu popup = new PopupMenu(this, view);
         popup.getMenuInflater().inflate(R.menu.message_context_menu, popup.getMenu());
+
+        // Remove certain options if the message is not sent by the current user
+        if (!message.getSenderId().equals(FirebaseUtil.currentUserId())) {
+            popup.getMenu().findItem(R.id.edit).setVisible(false);
+            popup.getMenu().findItem(R.id.delete).setVisible(false);
+            popup.getMenu().findItem(R.id.copy).setVisible(false);
+        }
+
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.edit) {
@@ -233,16 +332,50 @@ public class ChatActivity extends AppCompatActivity {
         clipboard.setPrimaryClip(clip);
         Toast.makeText(this, "Message copied", Toast.LENGTH_SHORT).show();
     }
-    private void pinMessage(ChatMessageModel message) {
-        // В этом методе вы можете добавить логику для закрепления сообщения
-        // Например, обновление чат-модели или добавление в список закрепленных сообщений пользователя
-        Toast.makeText(this, "Pinning message: " + message.getMessage(), Toast.LENGTH_SHORT).show();
+    private void replyToMessage(ChatMessageModel message) {
+        messageToReplyTo = message;
+        replyContextText.setText("Replying to: " + message.getMessage());
+        replyContextContainer.setVisibility(View.VISIBLE);
     }
 
-    private void replyToMessage(ChatMessageModel message) {
-        // В этом методе можно реализовать логику для ответа на сообщение
-        // Например, открыть диалог для ввода текста ответа или что-то подобное
-        Toast.makeText(this, "Replying to message: " + message.getMessage(), Toast.LENGTH_SHORT).show();
+    private void clearReplyContext() {
+        messageToReplyTo = null;
+        replyContextContainer.setVisibility(View.GONE);
+    }
+
+    private void pinMessage(ChatMessageModel message) {
+        pinnedMessage = message;
+        pinnedMessageText.setText(message.getMessage());
+        pinnedMessageSender.setText("Pinned by " + FirebaseUtil.currentUserDetails());
+        pinnedMessageContainer.setVisibility(View.VISIBLE);
+
+        // Save pinned message information to Firestore
+        FirebaseFirestore.getInstance()
+                .collection("chats")
+                .document(chatroomId)
+                .update("pinnedMessageId", message.getId(), "pinnedMessageText", message.getMessage(), "pinnedMessageSender", FirebaseUtil.currentUserId());
+    }
+
+    private void loadPinnedMessage() {
+        FirebaseFirestore.getInstance()
+                .collection("chats")
+                .document(chatroomId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot snapshot = task.getResult();
+                        if (snapshot.contains("pinnedMessageId")) {
+                            String pinnedMessageId = snapshot.getString("pinnedMessageId");
+                            String pinnedMessageText = snapshot.getString("pinnedMessageText");
+                            String pinnedMessageSender = snapshot.getString("pinnedMessageSender");
+                            pinnedMessageContainer.setVisibility(View.VISIBLE);
+                            this.pinnedMessageText.setText(pinnedMessageText);
+                            this.pinnedMessageSender.setText("Pinned by " + pinnedMessageSender);
+                        } else {
+                            pinnedMessageContainer.setVisibility(View.GONE);
+                        }
+                    }
+                });
     }
 
     void getOrCreateChatroomModel() {
@@ -263,34 +396,31 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     void sendMessageToUser(String message) {
+        String messageId = FirebaseUtil.getChatRoomMessageReferens(chatroomId).document().getId();
+        ChatMessageModel chatMessageModel;
+
+        if (messageToReplyTo != null) {
+            chatMessageModel = new ChatMessageModel(messageId, message, FirebaseUtil.currentUserId(), Timestamp.now(), messageToReplyTo.getId(), messageToReplyTo.getMessage());
+            clearReplyContext();
+        } else {
+            chatMessageModel = new ChatMessageModel(messageId, message, FirebaseUtil.currentUserId(), Timestamp.now());
+        }
+
+        // Save chat message model
+        FirebaseUtil.getChatRoomMessageReferens(chatroomId).document(messageId).set(chatMessageModel)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        messageInput.setText("");
+                        sendNotification(message);
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                    }
+                });
+
         chatRoomModel.setLastMessage(Timestamp.now());
         chatRoomModel.setLastMessageSenderId(FirebaseUtil.currentUserId());
         chatRoomModel.setLastMessage_user(message);
 
-        // Create a new ChatMessageModel with generated ID
-        String messageId = FirebaseUtil.getChatRoomMessageReferens(chatroomId).document().getId();
-        ChatMessageModel chatMessageModel = new ChatMessageModel(messageId, message, FirebaseUtil.currentUserId(), Timestamp.now());
-
-        // Save chat room model
         FirebaseUtil.getChatroomReference(chatroomId).set(chatRoomModel);
-
-        // Save chat message model
-        FirebaseUtil.getChatRoomMessageReferens(chatroomId).document(messageId).set(chatMessageModel)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            // Clear input field
-                            messageInput.setText("");
-
-                            // Send notification
-                            sendNotification(message);
-
-                            // Scroll to the last message
-                            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                        }
-                    }
-                });
     }
 
     @Override
@@ -377,4 +507,21 @@ public class ChatActivity extends AppCompatActivity {
             adapter.stopListening();
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus("online");
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        updateStatus("offline");
+    }
+
+    private void updateStatus(String status) {
+        FirebaseUtil.currentUserDetails().update("status", status)
+                .addOnSuccessListener(aVoid -> Log.d("StatusUpdate", "User status updated to " + status))
+                .addOnFailureListener(e -> Log.w("StatusUpdate", "Error updating user status", e));
+    }
+
 }

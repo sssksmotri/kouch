@@ -1,0 +1,7 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- Устанавливаем цвет заливки в прозрачный, чтобы контур круга был виден -->
+    <solid android:color="@color/purple_200"/>
+    <!-- Устанавливаем цвет контура -->
+
+</shape>

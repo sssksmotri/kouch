@@ -60,6 +60,12 @@ public class RecentRecyclerAdapter extends FirestoreRecyclerAdapter<ChatRoomMode
 
                         holder.lastMessegeTime.setText(FirebaseUtil.timestampToString(model.getLastMessage()));
 
+                        if ("online".equals(otheruser.getStatus())) {
+                            holder.statusIndicator.setVisibility(View.VISIBLE);
+                        } else {
+                            holder.statusIndicator.setVisibility(View.INVISIBLE);
+                        }
+
                         holder.itemView.setOnClickListener(v -> {
                             Intent intent = new Intent(context, ChatActivity.class);
                             AndroidUtil.passUserAsIntent(intent, otheruser);
@@ -82,12 +88,14 @@ public class RecentRecyclerAdapter extends FirestoreRecyclerAdapter<ChatRoomMode
         TextView lastMessegeText;
         TextView lastMessegeTime;
         ImageView profile_pic;
+        ImageView statusIndicator;
         public ChatRoomModelViewHolder(@NonNull View itemView) {
             super(itemView);
             lastMessegeText=itemView.findViewById(R.id.last_message_text);
             lastMessegeTime=itemView.findViewById(R.id.last_messag_time);
             fio=itemView.findViewById(R.id.user_name_text);
             profile_pic=itemView.findViewById(R.id.profile_pic_image_view);
+            statusIndicator = itemView.findViewById(R.id.status_indicator);
         }
     }
 }

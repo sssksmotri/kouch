@@ -74,6 +74,22 @@ public class MainActivity extends AppCompatActivity {
               }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus("online");
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        updateStatus("offline");
+    }
+
+    private void updateStatus(String status) {
+        FirebaseUtil.currentUserDetails().update("status", status)
+                .addOnSuccessListener(aVoid -> Log.d("StatusUpdate", "User status updated to " + status))
+                .addOnFailureListener(e -> Log.w("StatusUpdate", "Error updating user status", e));
+    }
 
 }

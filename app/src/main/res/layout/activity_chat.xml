@@ -1,15 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
+
+    <!-- Toolbar -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:id="@+id/toolbar">
+
         <TextView
             android:id="@+id/other_User_Fname"
             android:layout_width="wrap_content"
@@ -20,6 +22,15 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/profile_pic_layoute"/>
 
+        <TextView
+            android:id="@+id/other_User_Status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Offline"
+            android:textSize="14sp"
+            android:layout_below="@id/other_User_Fname"
+            android:layout_toRightOf="@id/profile_pic_layoute"
+            android:layout_marginTop="12dp"/>
 
         <include layout="@layout/profile_pic_view"
             android:id="@+id/profile_pic_layoute"
@@ -27,6 +38,7 @@
             android:layout_height="56dp"
             android:layout_marginStart="10dp"
             android:layout_toRightOf="@id/back_btn"/>
+
         <ImageButton
             android:id="@+id/back_btn"
             android:layout_width="30dp"
@@ -37,12 +49,84 @@
             android:layout_centerVertical="true"
             app:tint="@color/white"/>
     </RelativeLayout>
+
+    <!-- Pinned message container -->
+    <LinearLayout
+        android:id="@+id/pinned_message_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:background="#3D2D3A"
+        android:layout_below="@id/toolbar">
+        <TextView
+            android:id="@+id/pinned_message_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pinned Message"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:background="#3D2D3A"
+            android:padding="8dp"/>
+        <TextView
+            android:id="@+id/pinned_message_sender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pinned by User"
+            android:textColor="#3D2D3A"
+            android:textSize="12sp"
+            android:padding="8dp"/>
+        <ImageButton
+            android:id="@+id/unpin_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cross"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:padding="8dp"/>
+    </LinearLayout>
+
+    <!-- Chat RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/pinned_message_container"
         android:layout_above="@id/bottom_layout"/>
+
+    <!-- Reply context container -->
+    <LinearLayout
+        android:id="@+id/reply_context_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:background="#3D2D3A"
+        android:layout_above="@id/bottom_layout">
+
+        <TextView
+            android:id="@+id/reply_context_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Replying to message"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:padding="8dp" />
+
+        <ImageButton
+            android:id="@+id/cancel_reply_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cross"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <!-- Bottom layout -->
     <RelativeLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
@@ -50,8 +134,6 @@
         android:layout_alignParentBottom="true"
         android:padding="8dp"
         android:background="#3D2D3A">
-
-
         <EditText
             android:id="@+id/message_input"
             android:layout_width="match_parent"
@@ -65,8 +147,7 @@
             android:minHeight="48dp"
             android:padding="8dp"
             android:textColor="@color/lightgray"
-            android:textColorHint="@color/lightgray" />
-
+            android:textColorHint="@color/lightgray"/>
         <ImageButton
             android:id="@+id/message_send_btn"
             android:layout_width="48dp"
@@ -77,7 +158,5 @@
             android:layout_centerInParent="true"
             android:padding="8dp"
             android:layout_margin="10dp"/>
-
     </RelativeLayout>
-
 </RelativeLayout>
