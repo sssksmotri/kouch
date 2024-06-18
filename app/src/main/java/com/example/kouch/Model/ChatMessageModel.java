@@ -9,7 +9,7 @@ public class ChatMessageModel {
     private String message;
     private String senderId;
     private Timestamp timestamp;
-    private String replyToMessageId; // Add this
+    private String replyToMessageId;
     private String replyToMessageText;
 
     public ChatMessageModel() {

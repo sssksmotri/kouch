@@ -59,7 +59,6 @@ public class ChatActivity extends AppCompatActivity {
     String chatroomId;
     EditText messageInput;
     ImageButton backBtn;
-    ImageButton unpinButton;
     ImageButton cancelReplyButton;
     ImageButton sendMessageBtn;
     TextView otherUserFname;
@@ -69,10 +68,6 @@ public class ChatActivity extends AppCompatActivity {
     private ChatMessageModel messageToReplyTo;
     private TextView replyContextText;
     private LinearLayout replyContextContainer;
-    private ChatMessageModel pinnedMessage;
-    private TextView pinnedMessageText;
-    private TextView pinnedMessageSender;
-    private LinearLayout pinnedMessageContainer;
     private boolean isTyping = false;
     private long lastTypingTime = 0;
     private static final long TYPING_TIMEOUT = 2000;
@@ -100,9 +95,6 @@ public class ChatActivity extends AppCompatActivity {
         imageView=findViewById(R.id.profile_pic_image_view);
         replyContextText = findViewById(R.id.reply_context_text);
         replyContextContainer = findViewById(R.id.reply_context_container);
-        pinnedMessageText = findViewById(R.id.pinned_message_text);
-        pinnedMessageSender = findViewById(R.id.pinned_message_sender);
-        pinnedMessageContainer = findViewById(R.id.pinned_message_container);
         otherUserStatus = findViewById(R.id.other_User_Status);
 
         FirebaseUtil.GetOtherProfilePicStorageRef(otherUser.getId()).getDownloadUrl()
@@ -115,16 +107,6 @@ public class ChatActivity extends AppCompatActivity {
 
         updateUserStatus();
 
-        unpinButton = findViewById(R.id.unpin_button);
-        unpinButton.setOnClickListener(v -> {
-            pinnedMessageContainer.setVisibility(View.GONE);
-            FirebaseFirestore.getInstance()
-                    .collection("chats")
-                    .document(chatroomId)
-                    .update("pinnedMessageId", null, "pinnedMessageText", null, "pinnedMessageSender", null);
-        });
-
-// Add the cancel reply button click listener
         cancelReplyButton = findViewById(R.id.cancel_reply_button);
         cancelReplyButton.setOnClickListener(v -> {
             clearReplyContext();
@@ -146,7 +128,6 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 });
-        loadPinnedMessage();
         backBtn.setOnClickListener(v -> onBackPressed());
 
         otherUserFname.setText(otherUser.getFName());
@@ -173,8 +154,6 @@ public class ChatActivity extends AppCompatActivity {
             }
             return false;
         });
-
-        // Check if user stopped typing
         new Thread(() -> {
             while (true) {
                 long currentTime = System.currentTimeMillis();
@@ -247,9 +226,7 @@ public class ChatActivity extends AppCompatActivity {
             } else if (itemId == R.id.copy) {
                 copyMessage(message);
                 return true;
-            } else if (itemId == R.id.pin) {
-                pinMessage(message);
-                return true;
+
             } else if (itemId == R.id.reply) {
                 replyToMessage(message);
                 return true;
@@ -343,40 +320,6 @@ public class ChatActivity extends AppCompatActivity {
         replyContextContainer.setVisibility(View.GONE);
     }
 
-    private void pinMessage(ChatMessageModel message) {
-        pinnedMessage = message;
-        pinnedMessageText.setText(message.getMessage());
-        pinnedMessageSender.setText("Pinned by " + FirebaseUtil.currentUserDetails());
-        pinnedMessageContainer.setVisibility(View.VISIBLE);
-
-        // Save pinned message information to Firestore
-        FirebaseFirestore.getInstance()
-                .collection("chats")
-                .document(chatroomId)
-                .update("pinnedMessageId", message.getId(), "pinnedMessageText", message.getMessage(), "pinnedMessageSender", FirebaseUtil.currentUserId());
-    }
-
-    private void loadPinnedMessage() {
-        FirebaseFirestore.getInstance()
-                .collection("chats")
-                .document(chatroomId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        DocumentSnapshot snapshot = task.getResult();
-                        if (snapshot.contains("pinnedMessageId")) {
-                            String pinnedMessageId = snapshot.getString("pinnedMessageId");
-                            String pinnedMessageText = snapshot.getString("pinnedMessageText");
-                            String pinnedMessageSender = snapshot.getString("pinnedMessageSender");
-                            pinnedMessageContainer.setVisibility(View.VISIBLE);
-                            this.pinnedMessageText.setText(pinnedMessageText);
-                            this.pinnedMessageSender.setText("Pinned by " + pinnedMessageSender);
-                        } else {
-                            pinnedMessageContainer.setVisibility(View.GONE);
-                        }
-                    }
-                });
-    }
 
     void getOrCreateChatroomModel() {
         FirebaseUtil.getChatroomReference(chatroomId).get().addOnCompleteListener(task -> {
