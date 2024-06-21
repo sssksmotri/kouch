@@ -27,11 +27,20 @@
         android:elevation="5dp"
         android:background="@drawable/edittext_style"  />
     <EditText
-        android:id="@+id/profile_email"
+        android:id="@+id/profile_city"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:hint="Email"
+        android:hint="City"
+        android:layout_margin="10dp"
+        android:elevation="5dp"
+        android:background="@drawable/edittext_style"/>
+    <EditText
+        android:id="@+id/profile_addres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:hint="Addres"
         android:layout_margin="10dp"
         android:elevation="5dp"
         android:background="@drawable/edittext_style"/>

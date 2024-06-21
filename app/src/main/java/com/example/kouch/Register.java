@@ -22,7 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Register extends AppCompatActivity {
 
-    private EditText edUsername, edEmail, edPassword;
+    private EditText edUsername, edEmail, edPassword,edCity;
     private Button btn_register;
     private FirebaseAuth mAuth;
     private TextView avtoriz_txt;
@@ -38,6 +38,7 @@ public class Register extends AppCompatActivity {
         edPassword = findViewById(R.id.edPassword);
         avtoriz_txt = findViewById(R.id.avtoriz_txt);
         btn_register = findViewById(R.id.btn_register);
+        edCity=findViewById(R.id.edCity);
 
         avtoriz_txt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,10 +82,11 @@ public class Register extends AppCompatActivity {
         String username = edUsername.getText().toString();
         String email = edEmail.getText().toString();
         String password = edPassword.getText().toString();
+        String city=edCity.getText().toString();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        User user = new User(userId, username, "Couch", email, "", password, "", FieldValue.serverTimestamp(),"");
+        User user = new User(userId, username, "Couch", email, city, password, "", FieldValue.serverTimestamp(),"","");
 
         // Записываем пользователя в Firestore
         db.collection("users").document(userId)

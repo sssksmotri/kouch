@@ -45,8 +45,8 @@ public class SearchUserAction extends AppCompatActivity {
     void setupSearchRecyclerView(String searchTerm) {
 
         Query query = FirebaseUtil.allCollectionReferens()
-                .whereGreaterThanOrEqualTo("FName", searchTerm)
-                .whereLessThanOrEqualTo("FName", searchTerm + '\uf8ff'); // Добавляем верхний предел
+                .whereGreaterThanOrEqualTo("city", searchTerm)
+                .whereLessThanOrEqualTo("city", searchTerm + '\uf8ff');
 
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class).build();
@@ -59,19 +59,22 @@ public class SearchUserAction extends AppCompatActivity {
         adapter.startListening();
 
     }
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if(adapter!=null){
-            adapter.startListening();
-        }
-    }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if(adapter!=null){
-            adapter.stopListening();}
+    protected  void onStart(){
+        super.onStart();
+        updateStatus("online");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        updateStatus("offline");
+    }
+
+    private void updateStatus(String status) {
+        FirebaseUtil.currentUserDetails().update("status", status)
+                .addOnSuccessListener(aVoid -> Log.d("StatusUpdate", "User status updated to " + status))
+                .addOnFailureListener(e -> Log.w("StatusUpdate", "Error updating user status", e));
     }
 
     @Override
@@ -79,6 +82,7 @@ public class SearchUserAction extends AppCompatActivity {
         super.onResume();
         if(adapter!=null){
             adapter.notifyDataSetChanged();
+            updateStatus("online");
         }
     }
 }

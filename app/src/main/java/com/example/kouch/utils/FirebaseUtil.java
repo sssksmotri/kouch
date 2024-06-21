@@ -73,5 +73,8 @@ public class FirebaseUtil {
                 .get();
     }
 
-
+    public static Task<DocumentSnapshot> getMessageDetails(String messageId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        return db.collection("messages").document(messageId).get();
+    }
 }

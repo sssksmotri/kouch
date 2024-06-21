@@ -7,26 +7,28 @@ public class User {
     private String FName;
     private String Role;
     private String email;
-    private String phone;
+    private String city;
     private String password;
     private String photoUrl;
     private Object createdTimeStamp;
     private String fcmToken;
     private String status;
+    private String addres;
 
     public User() {
     }
 
-    public User(String id, String FName, String Role, String email, String phone, String password, String photoUrl, Object createdTimeStamp,String status) {
+    public User(String id, String FName, String Role, String email, String city, String password, String photoUrl, Object createdTimeStamp,String status,String addres) {
         this.id = id;
         this.FName = FName;
         this.Role = Role;
         this.email = email;
-        this.phone = phone;
+        this.city = city;
         this.password = password;
         this.photoUrl = photoUrl;
         this.createdTimeStamp = createdTimeStamp;
         this.status=status;
+        this.addres=addres;
     }
 
     @PropertyName("id")
@@ -67,16 +69,6 @@ public class User {
     @PropertyName("email")
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    @PropertyName("phone")
-    public String getPhone() {
-        return phone;
-    }
-
-    @PropertyName("phone")
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     @PropertyName("password")
@@ -123,5 +115,21 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getAddres() {
+        return addres;
+    }
+
+    public void setAddres(String addres) {
+        this.addres = addres;
     }
 }

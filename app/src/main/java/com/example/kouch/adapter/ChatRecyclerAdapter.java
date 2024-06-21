@@ -54,15 +54,14 @@ public class ChatRecyclerAdapter extends FirestoreRecyclerAdapter<ChatMessageMod
             holder.leftChatTextView.setText(model.getMessage());
             holder.leftChatTimestamp.setText(FirebaseUtil.timestampToString(model.getTimestamp()));
         }
-
-        // Fetch sender's first name (FName)
         FirebaseUtil.getUserDetails(model.getSenderId()).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 User user = documentSnapshot.toObject(User.class);
-                if (isCurrentUserSender) {
+                if (user!=null) {
+                    holder.leftReplySender.setText(user.getFName());
                     holder.rightReplySender.setText(user.getFName());
                 } else {
-                    holder.leftReplySender.setText(user.getFName());
+
                 }
             } else {
                 // Handle case where user details are not found

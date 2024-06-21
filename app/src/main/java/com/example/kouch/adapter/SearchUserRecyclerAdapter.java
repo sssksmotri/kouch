@@ -20,6 +20,8 @@ import com.example.kouch.utils.AndroidUtil;
 import com.example.kouch.utils.FirebaseUtil;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 
 public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,SearchUserRecyclerAdapter.UserViewHolder> {
@@ -32,15 +34,10 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
 
     @Override
     protected void onBindViewHolder(@NonNull UserViewHolder holder, int position, @NonNull User model) {
-        holder.usernameText.setText(model.getEmail());
+        holder.usernameText.setText(model.getCity());
         holder.fio.setText(model.getFName());
         if(model.getId().equals(FirebaseUtil.currentUserId())){
             holder.fio.setText(model.getFName()+" (Me)");
-        }
-        if ("online".equals(model.getStatus())) {
-            holder.statusIndicator.setVisibility(View.VISIBLE);
-        } else {
-            holder.statusIndicator.setVisibility(View.INVISIBLE);
         }
         FirebaseUtil.GetOtherProfilePicStorageRef(model.getId()).getDownloadUrl()
                 .addOnCompleteListener(t -> {
@@ -51,12 +48,33 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
                 });
 
         holder.itemView.setOnClickListener(v -> {
-        Intent intent = new Intent(context, ChatActivity.class);
+            Intent intent = new Intent(context, ChatActivity.class);
             AndroidUtil.passUserAsIntent(intent,model);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         });
-        Log.d("SearchUserAdapter", "User bind: " + model.getEmail() + ", fName: " + model.getFName());
+        Log.d("SearchUserAdapter", "User bind: " + model.getCity() + ", fName: " + model.getFName());
+        ListenerRegistration statusListener = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(model.getId())
+                .addSnapshotListener((snapshot, e) -> {
+                    if (e != null) {
+                        Log.w("StatusUpdate", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        String status = snapshot.getString("status");
+                        if ("online".equals(status)) {
+                            holder.statusIndicator.setVisibility(View.VISIBLE);
+                        } else {
+                            holder.statusIndicator.setVisibility(View.INVISIBLE);
+                        }
+                    } else {
+                        Log.d("StatusUpdate", "Current data: null");
+                    }
+                });
+        holder.setListenerRegistration(statusListener);
     }
 
     @NonNull
@@ -71,12 +89,25 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<User,Sea
         TextView fio;
         ImageView profile_pic;
         ImageView statusIndicator;
+        private ListenerRegistration listenerRegistration;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameText=itemView.findViewById(R.id.user_name_text);
             fio=itemView.findViewById(R.id.user_name);
             profile_pic=itemView.findViewById(R.id.profile_pic_image_view);
             statusIndicator = itemView.findViewById(R.id.status_indicator);
+        }
+        public void setListenerRegistration(ListenerRegistration listenerRegistration) {
+            this.listenerRegistration = listenerRegistration;
+        }
+
+        // Unregister the listener when the view holder is recycled
+        @Override
+        protected void finalize() throws Throwable {
+            if (listenerRegistration != null) {
+                listenerRegistration.remove();
+            }
+            super.finalize();
         }
     }
 }

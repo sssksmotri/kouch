@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -435,21 +436,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onBackPressed();  // This will finish the activity and go back to the previous activity
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (adapter != null) {
-            adapter.startListening();
-        }
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (adapter != null) {
-            adapter.stopListening();
-        }
-    }
     @Override
     protected void onResume() {
         super.onResume();

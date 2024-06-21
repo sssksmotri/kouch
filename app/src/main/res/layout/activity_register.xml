@@ -78,6 +78,31 @@
                     android:layout_marginBottom="10dp"
                     android:textStyle="bold"
                     android:textColorHint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:text="Город"
+                    android:fontFamily="@font/kanitcyrillic"
+                    android:layout_marginStart="55dp"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/edCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="55dp"
+                    android:layout_marginEnd="55dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/custom_input"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kanitcyrillic"
+                    android:layout_marginBottom="10dp"
+                    android:textStyle="bold"
+                    android:textColorHint="@color/white" />
 
                 <!-- Email Field -->
                 <TextView

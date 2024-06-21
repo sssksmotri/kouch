@@ -42,7 +42,8 @@ public class ProfileFragment extends Fragment {
 
     ImageView profilePic;
     EditText usernameInput;
-    EditText emailInput;
+    EditText cityinput;
+    EditText addresinput;
     Button updateProfileBtn;
     ProgressBar progressBar;
     TextView logoutBtn;
@@ -76,7 +77,8 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         profilePic = view.findViewById(R.id.profile_image_view);
         usernameInput = view.findViewById(R.id.profile_username);
-        emailInput = view.findViewById(R.id.profile_email);
+        cityinput = view.findViewById(R.id.profile_city);
+        addresinput = view.findViewById(R.id.profile_addres);
         updateProfileBtn = view.findViewById(R.id.profile_update_btn);
         progressBar = view.findViewById(R.id.profile_progress_bar);
         logoutBtn = view.findViewById(R.id.Logout_btn);
@@ -122,24 +124,30 @@ public class ProfileFragment extends Fragment {
         // Возвращение к экрану авторизации
         Intent intent = new Intent(getActivity(), Login.class);
         startActivity(intent);
-        getActivity().finish(); // Закрытие текущей активности
+        getActivity().finish();
     }
     void updateBtnClick() {
         String newusername = usernameInput.getText().toString();
-        String newuseremail = emailInput.getText().toString();
+        String newcity = cityinput.getText().toString();
+        String addres = addresinput.getText().toString();
 
         // Username validation
         if (newusername.isEmpty() || newusername.length() < 3) {
             usernameInput.setError("Введите минимум 3 символа");
-            return;  // Exit the method if validation fails
+            return;
         }
         currentUser.setFName(newusername);
         // Email validation
-        if (newuseremail.isEmpty()|| newuseremail.length()<3 || !isValidEmail(newuseremail)) {
-            emailInput.setError("Введите корректный email");
+        if (newcity.isEmpty()|| newcity.length()<3 ) {
+            cityinput.setError("Введите минимум 3 символа");
             return;
         }
-        currentUser.setEmail(newuseremail);
+        currentUser.setCity(newcity);
+        if (addres.isEmpty()|| addres.length()<3 ) {
+            addresinput.setError("Введите минимум 3 символа");
+            return;
+        }
+        currentUser.setAddres(addres);
         setInProggres(true);
         if(selectedImageUri!=null){
             FirebaseUtil.GetCurrentProfilePicStorageRef().putFile(selectedImageUri)
@@ -164,10 +172,7 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    boolean isValidEmail(String email) {
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-        return email.matches(emailPattern);
-    }
+
     void getUserData(){
         setInProggres(true);
         FirebaseUtil.GetCurrentProfilePicStorageRef().getDownloadUrl()
@@ -181,7 +186,8 @@ public class ProfileFragment extends Fragment {
             setInProggres(false);
             currentUser=task.getResult().toObject(User.class);
             usernameInput.setText(currentUser.getFName());
-            emailInput.setText(currentUser.getEmail());
+            cityinput.setText(currentUser.getCity());
+            addresinput.setText(currentUser.getAddres());
         });
     }
     void setInProggres(boolean inProggres){
@@ -194,5 +200,4 @@ public class ProfileFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
         }
     }
-
 }
