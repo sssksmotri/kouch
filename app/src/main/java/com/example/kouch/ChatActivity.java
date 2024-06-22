@@ -12,6 +12,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -71,7 +74,17 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayout replyContextContainer;
     private boolean isTyping = false;
     private long lastTypingTime = 0;
-    private static final long TYPING_TIMEOUT = 2000;
+    private static final long TYPING_TIMEOUT = 1000;
+    private Handler typingHandler = new Handler();
+    private Runnable typingTimeoutRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isTyping) {
+                isTyping = false;
+                updateStatus("online");
+            }
+        }
+    };
 
 
     @Override
@@ -140,37 +153,27 @@ public class ChatActivity extends AppCompatActivity {
                 return;
             }
             sendMessageToUser(message);
-            // Reset typing status after sending message
+
             updateStatus("online");
         });
+        messageInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        // Listen for typing events
-        messageInput.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 lastTypingTime = System.currentTimeMillis();
                 if (!isTyping) {
                     isTyping = true;
                     updateStatus("typing...");
                 }
+                typingHandler.removeCallbacks(typingTimeoutRunnable);
+                typingHandler.postDelayed(typingTimeoutRunnable, TYPING_TIMEOUT);
             }
-            return false;
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
-        new Thread(() -> {
-            while (true) {
-                long currentTime = System.currentTimeMillis();
-                if (isTyping && (currentTime - lastTypingTime > TYPING_TIMEOUT)) {
-                    runOnUiThread(() -> {
-                        isTyping = false;
-                        updateStatus("online");
-                    });
-                }
-                try {
-                    Thread.sleep(500); // Check every 0.5 second
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     void setupChatRecyclerView() {
